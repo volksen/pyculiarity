@@ -69,6 +69,9 @@ def detect_anoms(data, k=0.49, alpha=0.05, num_obs_per_period=None,
 
     decomp = stl(data.value, "periodic", np=num_obs_per_period)
 
+    # 
+    median = data.value.median()
+    
     # Remove the seasonal component, and the median of the data to create the univariate remainder
     d = {
         'timestamp': data.index,
@@ -78,7 +81,8 @@ def detect_anoms(data, k=0.49, alpha=0.05, num_obs_per_period=None,
 
     p = {
         'timestamp': decomp.index,
-        'value': ps.to_numeric((decomp['trend'] + decomp['seasonal']).truncate())
+        'trendseasonal': ps.to_numeric((decomp['trend'] + decomp['seasonal']).truncate()),
+        'medianseasonal' : ps.to_numeric((median + decomp['seasonal']).truncate())
     }
     data_decomp = ps.DataFrame(p)
 
